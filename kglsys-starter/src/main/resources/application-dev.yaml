@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: kglsys-app
+  datasource:
+    url: jdbc:mysql://localhost:3306/kglsys?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
+    password: 111111
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+  web:
+    resources:
+      add-mappings: false
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    open-in-view: false
+    properties:
+      hibernate:
+      enable_lazy_load_no_trans: true
+
+server:
+  error:
+    include-binding-errors: always
+    include-message: always
+    include-stacktrace: never
+    include-exception: false
+
+# JWT properties
+# this-is-a-super-long-and-secure-secret-key-for-jwt-2025  To BASE64 EnCode
+app:
+  jwtSecret: dGhpcy1pcy1hLXN1cGVyLWxvbmctYW5kLXNlY3VyZS1zZWNyZXQta2V5LWZvci1qd3QtMjAyNQ==
+  jwtExpirationInMs: 86400000
