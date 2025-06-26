@@ -31,9 +31,9 @@ public class ApiResponse<T> {
         return new ApiResponse<>(200, message, data);
     }
 
-    // 成功，不返回数据
-    public static <T> ApiResponse<T> success() {
-        return new ApiResponse<>(200, "Success", null);
+    // 成功，并返回自定义消息
+    public static <T> ApiResponse<T> success(String message) {
+        return new ApiResponse<>(200, message, null);
     }
 
     // 失败，返回指定状态码和消息

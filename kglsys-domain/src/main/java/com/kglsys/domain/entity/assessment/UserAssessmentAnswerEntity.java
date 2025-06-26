@@ -62,10 +62,8 @@ public class UserAssessmentAnswerEntity implements Serializable {
 
     /**
      * 答题时间
-     * 使用 @CreationTimestamp 会在实体创建时自动填充当前时间
      * updatable = false 确保该字段在更新时不会被改变
      */
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
 }
