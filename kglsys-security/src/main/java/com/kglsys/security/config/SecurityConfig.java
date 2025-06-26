@@ -1,7 +1,7 @@
 package com.kglsys.security.config;
 
-import com.kglsys.common.exception.JwtAccessDeniedHandler;
-import com.kglsys.common.exception.security.JwtAuthenticationEntryPoint;
+import com.kglsys.common.util.JwtAccessDeniedHandler;
+import com.kglsys.common.util.JwtAuthenticationEntryPoint;
 import com.kglsys.security.filter.JwtAuthenticationFilter;
 import jakarta.annotation.Resource;
 import org.springframework.context.annotation.Bean;
@@ -45,7 +45,7 @@ public class SecurityConfig {
                 // Configure authorization rules for HTTP requests
                 .authorizeHttpRequests(auth -> auth
                         // Permit all requests to authentication endpoints
-                        .requestMatchers("/api/auth/**","/api/test/**").permitAll()
+                        .requestMatchers("/api/auth/**","/api/test/**", "/api/assessment/**").permitAll()
                         // Require authentication for any other request
                         .anyRequest().authenticated()
                 );

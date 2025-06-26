@@ -2,10 +2,10 @@ package com.kglsys.application.service;
 
 import com.kglsys.api.request.UserProfileRequest;
 import com.kglsys.api.response.UserProfileResponse;
-import com.kglsys.domain.entity.UserEntity;
-import com.kglsys.domain.entity.UserProfileEntity;
-import com.kglsys.domain.repository.UserProfileRepository;
-import com.kglsys.domain.repository.UserRepository;
+import com.kglsys.domain.entity.base.UserEntity;
+import com.kglsys.domain.entity.base.UserProfileEntity;
+import com.kglsys.domain.repository.base.UserProfileRepository;
+import com.kglsys.domain.repository.base.UserRepository;
 import com.kglsys.application.mapper.UserProfileMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

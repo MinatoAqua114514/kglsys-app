@@ -1,7 +1,7 @@
 package com.kglsys.application.service;
 
-import com.kglsys.domain.entity.UserEntity;
-import com.kglsys.domain.repository.UserRepository;
+import com.kglsys.domain.entity.base.UserEntity;
+import com.kglsys.domain.repository.base.UserRepository;
 import com.kglsys.application.custom.CustomUserDetails;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

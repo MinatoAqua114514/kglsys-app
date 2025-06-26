@@ -1,6 +1,6 @@
 package com.kglsys.application.custom;
 
-import com.kglsys.domain.entity.UserEntity;
+import com.kglsys.domain.entity.base.UserEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;

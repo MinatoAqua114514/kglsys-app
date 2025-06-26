@@ -1,9 +1,9 @@
 package com.kglsys.application.mapper;
 
 import com.kglsys.api.response.UserProfileResponse;
-import com.kglsys.domain.entity.RoleEntity;
-import com.kglsys.domain.entity.UserEntity;
-import com.kglsys.domain.entity.UserProfileEntity;
+import com.kglsys.domain.entity.base.RoleEntity;
+import com.kglsys.domain.entity.base.UserEntity;
+import com.kglsys.domain.entity.base.UserProfileEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
