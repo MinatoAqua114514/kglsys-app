@@ -49,7 +49,7 @@ public class AssessmentQuestionEntity implements Serializable {
      * 是否启用该问题
      */
     @Column(name = "is_active", nullable = false)
-    private Boolean isActive = true;
+    private Boolean isActive;
 
     /**
      * 一对多关系：一个问题拥有多个选项

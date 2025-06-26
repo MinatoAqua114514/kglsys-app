@@ -14,6 +14,7 @@ public class QuestionDetailResponse {
 
     private Integer id;
     private String questionText;
+    private boolean active;
     private List<OptionResponse> options;
 
     /**

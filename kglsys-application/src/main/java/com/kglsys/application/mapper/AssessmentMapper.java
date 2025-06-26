@@ -20,12 +20,14 @@ public interface AssessmentMapper {
      * MapStruct 会自动处理以下映射：
      * - question.id -> response.id
      * - question.questionText -> response.questionText
+     * - question.isActive -> response.active
      * - question.options (List<QuestionOption>) -> response.options (List<OptionResponse>)
      * 在映射列表时，它会自动寻找下面的 toOptionResponse 方法进行逐个元素转换。
      *
      * @param question 数据库实体对象
      * @return 用于API响应的DTO对象
      */
+    @Mapping(source = "isActive", target = "active")
     QuestionDetailResponse toQuestionDetailResponse(AssessmentQuestionEntity question);
 
     /**
