@@ -4,8 +4,6 @@ import com.kglsys.domain.entity.base.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-
 import jakarta.persistence.*;
 
 import java.io.Serial;
@@ -62,7 +60,6 @@ public class UserAssessmentAnswerEntity implements Serializable {
 
     /**
      * 答题时间
-     * updatable = false 确保该字段在更新时不会被改变
      */
     @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
