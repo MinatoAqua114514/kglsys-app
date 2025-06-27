@@ -1,6 +1,8 @@
 package com.kglsys.web.controller;
 
 import com.kglsys.api.request.AnswerSubmissionRequest;
+import com.kglsys.api.request.UpdatePathRequest;
+import com.kglsys.api.response.AssessmentResultResponse;
 import com.kglsys.common.util.ApiResponse;
 import com.kglsys.application.service.AssessmentService;
 import com.kglsys.api.response.QuestionDetailResponse;
@@ -56,6 +58,40 @@ public class AssessmentController {
             // 在生产环境中，应该记录详细的错误日志
             // log.error("提交答案时发生未知错误", e);
             return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "服务器内部错误，请稍后重试");
+        }
+    }
+
+    /**
+     * 提交测评并计算学习风格及推荐路径的API接口
+     * @param userId 从URL路径中获取的用户ID
+     * @return 返回一个包含详细测评结果的JSON对象，或在无法计算时返回404
+     */
+    @PostMapping("/submit/{userId}")
+    public ApiResponse<AssessmentResultResponse> submitAssessment(@PathVariable Long userId) {
+        // 调用更新后的服务方法
+        AssessmentResultResponse result = assessmentService.calculateAndAssignPaths(userId);
+
+        if (result != null) {
+            return ApiResponse.success("用户趋势岗位计算成功", result);
+        } else {
+            // 如果用户没有答案或发生其他错误，返回 "Not Found"
+            return ApiResponse.error(404, "测评结果计算错误");
+        }
+    }
+
+    /**
+     * 【新增API接口】
+     * 手动为用户指派或更新学习路径。
+     * @param request 包含userId和assignedPathId的JSON请求体
+     * @return 成功则返回成功信息，失败则返回400错误及原因
+     */
+    @PostMapping("/assign-path")
+    public ApiResponse<?> assignLearningPath(@RequestBody UpdatePathRequest request) {
+        boolean success = assessmentService.updateUserAssignedPath(request);
+        if (success) {
+            return ApiResponse.success("学习路径更新成功。");
+        } else {
+            return ApiResponse.error(400, "更新失败。请确认用户ID正确，且该用户已完成学习风格测评。");
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.kglsys.domain.entity.base;
 
+import com.kglsys.domain.entity.learning.UserLearningProfileEntity;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -57,6 +58,15 @@ public class UserEntity {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<RoleEntity> roles;
+
+    /**
+     * 一对一关系：用户对应一个学习档案
+     * mappedBy = "user" 表示关联关系由 UserLearningProfileEntity 的 'user' 字段维护
+     * CascadeType.ALL: 对用户的操作（持久化、删除等）会级联到其学习档案
+     * orphanRemoval = true: 如果将 userLearningProfile 从 user 中移除（user.setUserLearningProfile(null)），则对应的学习档案记录将被删除
+     */
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private UserLearningProfileEntity userLearningProfile;
 
     public Set<PermissionEntity> getAllPermissions() {
         return this.getRoles().stream()

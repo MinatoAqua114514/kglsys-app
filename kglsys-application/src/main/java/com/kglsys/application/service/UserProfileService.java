@@ -7,18 +7,18 @@ import com.kglsys.domain.entity.base.UserProfileEntity;
 import com.kglsys.domain.repository.base.UserProfileRepository;
 import com.kglsys.domain.repository.base.UserRepository;
 import com.kglsys.application.mapper.UserProfileMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class UserProfileService {
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private UserProfileRepository userProfileRepository;
-    @Autowired
-    private UserProfileMapper userProfileMapper;
+
+    private final UserRepository userRepository;
+    private final UserProfileRepository userProfileRepository;
+    private final UserProfileMapper userProfileMapper;
 
     /**
      * 创建用户个人资料

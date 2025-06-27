@@ -81,8 +81,8 @@ public class BusinessExceptionHandler extends BaseExceptionHandler {
         String requestUri = request.getRequestURI();
         log.warn("处理自定义业务异常: 资源未找到。 URI: {}, 异常消息: {}", requestUri, ex.getMessage());
 
-        // 构建统一的API响应体
-        ApiResponse<?> responseBody = ApiResponse.error(HttpStatus.NOT_FOUND.value(), "您所请求的资源不存在。");
+        // 使用异常中的自定义消息构建响应体
+        ApiResponse<?> responseBody = ApiResponse.error(HttpStatus.NOT_FOUND.value(), ex.getMessage());
 
         // 返回一个标准的ResponseEntity，其中包含响应体和HTTP状态码
         return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);

@@ -3,6 +3,7 @@ package com.kglsys.application.service;
 import com.kglsys.domain.entity.base.UserEntity;
 import com.kglsys.domain.repository.base.UserRepository;
 import com.kglsys.application.custom.CustomUserDetails;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,10 +21,10 @@ import java.util.Set;
  * It is required by Spring Security for authentication.
  */
 @Service
+@RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
-    @Autowired
-    private UserRepository userRepository; // Your JPA repository for the User entity
+    private final UserRepository userRepository; // Your JPA repository for the User entity
 
     /**
      * Locates the user based on the username. The readOnly = true flag is a performance
