@@ -2,7 +2,7 @@ spring:
   application:
     name: kglsys-app
   datasource:
-    url: jdbc:mysql://localhost:3306/devdb2?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://localhost:3306/kglsys?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: root
     password: 111111
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -35,5 +35,5 @@ logging:
 # JWT Configuration
 # IMPORTANT: Use a long, random, base64-encoded string for production.
 # You can generate one here: https://www.allkeysgenerator.com/Random/Security-Encryption-Key-Generator.aspx
-kglsys.jwt.secret: your-super-secret-key-that-is-long-and-secure-and-should-be-in-env-vars
+kglsys.jwt.secret: gOtMB1Q60PK403abowjb4cvpcz+h+ZJA8BzKpyNEvPNM0yMouZJ+O5tkXbmzk/tmZfb2ChBvWZv1xN3VNsC0bQ==
 kglsys.jwt.expiration-ms: 86400000 # 24 hours

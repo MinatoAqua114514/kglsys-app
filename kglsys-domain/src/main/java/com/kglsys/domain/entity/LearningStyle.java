@@ -37,6 +37,6 @@ public class LearningStyle {
     private String description;
 
     // 一个岗位可以对应多个学习路径
-    @OneToMany(mappedBy = "learningStyle", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "forStyle", fetch = FetchType.LAZY)
     private Set<LearningPath> learningPaths;
 }

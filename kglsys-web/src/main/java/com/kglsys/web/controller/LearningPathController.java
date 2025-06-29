@@ -3,7 +3,9 @@ package com.kglsys.web.controller;
 import com.kglsys.application.service.LearningPathService;
 import com.kglsys.common.responses.ApiResponse;
 import com.kglsys.dto.request.SelectPathRequest;
+import com.kglsys.dto.response.LearningPathGraphVo;
 import com.kglsys.dto.response.LearningPathVo;
+import com.kglsys.dto.response.NodeDetailVo;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -32,5 +34,26 @@ public class LearningPathController {
     public ResponseEntity<ApiResponse<Void>> selectPath(@Valid @RequestBody SelectPathRequest request) {
         learningPathService.selectLearningPath(request);
         return ResponseEntity.ok(ApiResponse.success());
+    }
+
+    /**
+     * 【新增】获取当前用户学习路径的图谱视图。
+     * @return 包含节点和边的图谱数据。
+     */
+    @GetMapping("/me/graph")
+    public ResponseEntity<ApiResponse<LearningPathGraphVo>> getMyLearningPathGraph() {
+        LearningPathGraphVo graphVo = learningPathService.getLearningPathGraphForCurrentUser();
+        return ResponseEntity.ok(ApiResponse.success(graphVo));
+    }
+
+    /**
+     * 【新增】获取指定学习节点的详细信息。
+     * @param nodeId 节点的ID
+     * @return 包含节点所有详细信息的响应。
+     */
+    @GetMapping("/nodes/{nodeId}")
+    public ResponseEntity<ApiResponse<NodeDetailVo>> getNodeDetails(@PathVariable Long nodeId) {
+        NodeDetailVo nodeDetail = learningPathService.getNodeDetails(nodeId);
+        return ResponseEntity.ok(ApiResponse.success(nodeDetail));
     }
 }

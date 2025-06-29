@@ -1,5 +1,6 @@
 package com.kglsys.application.service.impl;
 
+import com.kglsys.application.mapper.AssessmentMapper; // 引入 Mapper
 import com.kglsys.application.service.AssessmentAdminService;
 import com.kglsys.common.exception.ResourceNotFoundException;
 import com.kglsys.domain.entity.AssessmentQuestion;
@@ -8,7 +9,6 @@ import com.kglsys.domain.entity.QuestionOption;
 import com.kglsys.dto.request.AssessmentQuestionRequest;
 import com.kglsys.dto.request.QuestionOptionRequest;
 import com.kglsys.dto.response.AssessmentQuestionAdminVo;
-import com.kglsys.dto.response.QuestionOptionAdminVo;
 import com.kglsys.infra.repository.AssessmentQuestionRepository;
 import com.kglsys.infra.repository.LearningStyleRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,30 +23,34 @@ public class AssessmentAdminServiceImpl implements AssessmentAdminService {
 
     private final AssessmentQuestionRepository questionRepository;
     private final LearningStyleRepository learningStyleRepository;
+    private final AssessmentMapper assessmentMapper; // 注入 Mapper
 
     @Override
     @Transactional(readOnly = true)
     public List<AssessmentQuestionAdminVo> getAllQuestions() {
-        return questionRepository.findAll().stream()
-                .map(this::mapQuestionToAdminVo)
-                .collect(Collectors.toList());
+        // 使用 Mapper 进行列表转换
+        return assessmentMapper.toAdminVoList(questionRepository.findAll());
     }
 
     @Override
     @Transactional(readOnly = true)
     public AssessmentQuestionAdminVo getQuestionById(Integer questionId) {
         AssessmentQuestion question = findQuestionById(questionId);
-        return mapQuestionToAdminVo(question);
+        // 使用 Mapper 进行单个对象转换
+        return assessmentMapper.toAdminVo(question);
     }
 
     @Override
     @Transactional
     public AssessmentQuestionAdminVo createQuestion(AssessmentQuestionRequest request) {
-        AssessmentQuestion question = new AssessmentQuestion();
-        mapRequestToQuestionEntity(request, question);
+        // 使用 Mapper 将 DTO 映射到新实体
+        AssessmentQuestion question = assessmentMapper.toEntity(request);
+
+        // 手动处理需要业务逻辑的复杂映射
+        mapOptionsToQuestion(request, question);
 
         AssessmentQuestion savedQuestion = questionRepository.save(question);
-        return mapQuestionToAdminVo(savedQuestion);
+        return assessmentMapper.toAdminVo(savedQuestion);
     }
 
     @Override
@@ -55,14 +58,17 @@ public class AssessmentAdminServiceImpl implements AssessmentAdminService {
     public AssessmentQuestionAdminVo updateQuestion(Integer questionId, AssessmentQuestionRequest request) {
         AssessmentQuestion question = findQuestionById(questionId);
 
-        // Clear existing options to replace them. This is simpler and safer than trying to match and update.
-        // `orphanRemoval=true` on the entity relationship will ensure the old options are deleted from the DB.
+        // 清除旧选项
         question.getOptions().clear();
 
-        mapRequestToQuestionEntity(request, question);
+        // 使用 Mapper 更新实体的基本字段
+        assessmentMapper.updateEntityFromRequest(request, question);
+
+        // 手动处理需要业务逻辑的复杂映射
+        mapOptionsToQuestion(request, question);
 
         AssessmentQuestion updatedQuestion = questionRepository.save(question);
-        return mapQuestionToAdminVo(updatedQuestion);
+        return assessmentMapper.toAdminVo(updatedQuestion);
     }
 
     @Override
@@ -80,14 +86,9 @@ public class AssessmentAdminServiceImpl implements AssessmentAdminService {
     }
 
     /**
-     * Helper method to map DTO data to an entity for both create and update operations.
+     * 重构后的辅助方法，只处理包含业务逻辑的复杂映射（查询关联实体）。
      */
-    private void mapRequestToQuestionEntity(AssessmentQuestionRequest request, AssessmentQuestion question) {
-        question.setQuestionText(request.getQuestionText());
-        question.setSequence(request.getSequence());
-        question.setActive(request.isActive());
-
-        // Map and add new options
+    private void mapOptionsToQuestion(AssessmentQuestionRequest request, AssessmentQuestion question) {
         for (QuestionOptionRequest optionRequest : request.getOptions()) {
             LearningStyle style = learningStyleRepository.findById(optionRequest.getContributesToStyleId())
                     .orElseThrow(() -> new ResourceNotFoundException("关联的岗位不存在，ID: " + optionRequest.getContributesToStyleId()));
@@ -96,33 +97,7 @@ public class AssessmentAdminServiceImpl implements AssessmentAdminService {
             option.setOptionText(optionRequest.getOptionText());
             option.setContributesToStyle(style);
 
-            // Set the bidirectional relationship
             question.addOption(option);
         }
-    }
-
-
-
-    // --- Admin VO Mapping Methods ---
-
-    private AssessmentQuestionAdminVo mapQuestionToAdminVo(AssessmentQuestion question) {
-        AssessmentQuestionAdminVo vo = new AssessmentQuestionAdminVo();
-        vo.setId(question.getId());
-        vo.setQuestionText(question.getQuestionText());
-        vo.setSequence(question.getSequence());
-        vo.setActive(question.isActive());
-        vo.setOptions(question.getOptions().stream()
-                .map(this::mapOptionToAdminVo)
-                .collect(Collectors.toList()));
-        return vo;
-    }
-
-    private QuestionOptionAdminVo mapOptionToAdminVo(QuestionOption option) {
-        QuestionOptionAdminVo vo = new QuestionOptionAdminVo();
-        vo.setId(option.getId());
-        vo.setOptionText(option.getOptionText());
-        vo.setContributesToStyleId(option.getContributesToStyle().getId());
-        vo.setContributesToStyleName(option.getContributesToStyle().getDisplayName());
-        return vo;
     }
 }

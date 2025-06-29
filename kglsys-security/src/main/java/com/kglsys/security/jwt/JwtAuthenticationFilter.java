@@ -1,6 +1,6 @@
 package com.kglsys.security.jwt;
 
-import com.kglsys.infra.jwt.JwtProvider;
+import com.kglsys.infra.jwt.JwtTokenGenerator;
 import com.kglsys.security.service.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -22,7 +22,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtProvider jwtProvider;
+    private final JwtTokenGenerator jwtProvider;
     private final CustomUserDetailsService userDetailsService;
 
     @Override

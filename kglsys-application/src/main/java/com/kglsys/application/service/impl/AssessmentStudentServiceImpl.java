@@ -1,5 +1,6 @@
 package com.kglsys.application.service.impl;
 
+import com.kglsys.application.mapper.AssessmentMapper;
 import com.kglsys.application.service.AssessmentStudentService;
 import com.kglsys.common.exception.BusinessRuleException;
 import com.kglsys.common.exception.ResourceNotFoundException;
@@ -8,7 +9,6 @@ import com.kglsys.dto.payload.AnswerPayload;
 import com.kglsys.dto.request.ConfirmStyleRequest;
 import com.kglsys.dto.request.SubmitAssessmentRequest;
 import com.kglsys.dto.response.AssessmentResultVo;
-import com.kglsys.dto.response.QuestionOptionVo;
 import com.kglsys.dto.response.QuestionnaireQuestionVo;
 import com.kglsys.infra.repository.*;
 import com.kglsys.application.util.SecurityUtil;
@@ -21,6 +21,9 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * 学生测评流程服务的实现类。
+ */
 @Service
 @RequiredArgsConstructor
 public class AssessmentStudentServiceImpl implements AssessmentStudentService {
@@ -31,14 +34,15 @@ public class AssessmentStudentServiceImpl implements AssessmentStudentService {
     private final UserLearningProfileRepository profileRepository;
     private final UserAssessmentAnswerRepository answerRepository;
     private final UserRepository userRepository;
+    private final AssessmentMapper assessmentMapper;
 
     // FR3: 获取测评问卷
     @Override
     @Transactional(readOnly = true)
     public List<QuestionnaireQuestionVo> getQuestionnaire() {
         List<AssessmentQuestion> questions = questionRepository.findByIsActiveTrueOrderBySequenceAsc();
-        // Manual mapping to VOs
-        return questions.stream().map(this::mapQuestionToVo).collect(Collectors.toList());
+        // 使用 Mapper 转换
+        return assessmentMapper.toQuestionnaireVoList(questions);
     }
 
     // FR4 & FR5: 提交问卷并计算结果
@@ -46,7 +50,8 @@ public class AssessmentStudentServiceImpl implements AssessmentStudentService {
     @Transactional
     public List<AssessmentResultVo> submitAssessment(SubmitAssessmentRequest request) {
         Long userId = SecurityUtil.getCurrentUserId().orElseThrow(() -> new IllegalStateException("用户未登录"));
-        User user = userRepository.findById(userId).get();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("当前登录用户不存在，ID: " + userId));
 
         // 1. 验证提交的答案
         Map<Integer, QuestionOption> validatedOptions = validateAndFetchOptions(request);
@@ -88,9 +93,9 @@ public class AssessmentStudentServiceImpl implements AssessmentStudentService {
         profileRepository.save(profile);
 
         // 7. 返回推荐岗位信息
-        return styleRepository.findAllById(topStyleIds).stream()
-                .map(this::mapStyleToVo)
-                .collect(Collectors.toList());
+        List<LearningStyle> recommendedStyles = styleRepository.findAllById(topStyleIds);
+        // 使用 Mapper 转换
+        return assessmentMapper.toAssessmentResultVoList(recommendedStyles);
     }
 
     // FR6: 确认岗位
@@ -117,35 +122,5 @@ public class AssessmentStudentServiceImpl implements AssessmentStudentService {
                 .collect(Collectors.toList());
         return optionRepository.findAllById(optionIds).stream()
                 .collect(Collectors.toMap(opt -> opt.getQuestion().getId(), Function.identity()));
-    }
-
-    // --- VO and DTO mapping methods ---
-
-    private QuestionnaireQuestionVo mapQuestionToVo(AssessmentQuestion question) {
-        QuestionnaireQuestionVo vo = new QuestionnaireQuestionVo();
-        vo.setId(question.getId());
-        vo.setQuestionText(question.getQuestionText());
-
-        List<QuestionOptionVo> optionVos = question.getOptions().stream()
-                .map(this::mapOptionToVo)
-                .collect(Collectors.toList());
-        vo.setOptions(optionVos);
-        return vo;
-    }
-
-    private QuestionOptionVo mapOptionToVo(QuestionOption option) {
-        QuestionOptionVo vo = new QuestionOptionVo();
-        vo.setId(option.getId());
-        vo.setOptionText(option.getOptionText());
-        return vo;
-    }
-
-    private AssessmentResultVo mapStyleToVo(LearningStyle style) {
-        AssessmentResultVo vo = new AssessmentResultVo();
-        vo.setId(style.getId());
-        vo.setName(style.getName());
-        vo.setDisplayName(style.getDisplayName());
-        vo.setDescription(style.getDescription());
-        return vo;
     }
 }

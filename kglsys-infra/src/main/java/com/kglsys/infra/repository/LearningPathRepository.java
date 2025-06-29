@@ -32,4 +32,17 @@ public interface LearningPathRepository extends JpaRepository<LearningPath, Long
      */
     @EntityGraph(attributePaths = {"nodes"})
     Optional<LearningPath> findWithNodesById(Long id);
+
+    /**
+     * 【新增】根据ID查找学习路径，并一次性加载其所有节点、以及节点间的所有依赖关系。
+     * 这是构建知识图谱的核心查询，通过深度JOIN避免了大量的N+1查询。
+     * @param id 学习路径的ID
+     * @return 包含完整图谱结构的学习路径
+     */
+    @EntityGraph(attributePaths = {
+            "nodes",
+            "nodes.prerequisites", "nodes.prerequisites.prerequisiteNode",
+            "nodes.dependencies", "nodes.dependencies.dependentNode"
+    })
+    Optional<LearningPath> findWithAllDependenciesById(Long id);
 }

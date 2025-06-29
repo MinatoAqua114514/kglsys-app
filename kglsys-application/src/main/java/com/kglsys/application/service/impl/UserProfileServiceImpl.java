@@ -1,10 +1,12 @@
 package com.kglsys.application.service.impl;
 
+import com.kglsys.application.mapper.UserProfileMapper;
 import com.kglsys.application.service.UserProfileService;
 import com.kglsys.common.exception.BusinessRuleException;
 import com.kglsys.common.exception.ResourceNotFoundException;
 import com.kglsys.domain.entity.User;
 import com.kglsys.domain.entity.UserProfile;
+import com.kglsys.dto.request.UpdateUserProfileRequest;
 import com.kglsys.dto.response.UserProfileVo;
 import com.kglsys.infra.repository.UserProfileRepository;
 import com.kglsys.infra.repository.UserRepository;
@@ -12,40 +14,51 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * 用户个人资料服务的实现类。
+ */
 @Service
 @RequiredArgsConstructor
 public class UserProfileServiceImpl implements UserProfileService {
 
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
-    // MapStruct 在这种简单场景下可能过度设计，我们手动映射。
-    // 如果对象复杂，推荐使用 MapStruct。
+    private final UserProfileMapper userProfileMapper;
 
     @Override
     @Transactional(readOnly = true)
     public UserProfileVo getProfileByUserId(Long userId) {
         UserProfile profile = userProfileRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("用户资料未找到，用户ID: " + userId));
-        return mapEntityToDto(profile);
+        return userProfileMapper.toVo(profile);
     }
 
     @Override
     @Transactional
-    public UserProfileVo createOrUpdateProfile(Long userId, UserProfileVo profileDto) {
+    public UserProfileVo createOrUpdateProfile(Long userId, UpdateUserProfileRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("用户未找到，用户ID: " + userId));
 
         // 业务规则校验
-        validateProfileByRole(user, profileDto);
+        validateProfileByRole(user, request);
 
         UserProfile profile = userProfileRepository.findById(userId)
-                .orElse(new UserProfile());
+                .orElseGet(() -> {
+                    // 如果Profile不存在，创建一个新的
+                    UserProfile newProfile = new UserProfile();
+                    // 【关键】维护双向关系
+                    user.setUserProfile(newProfile);
+                    return newProfile;
+                });
 
-        mapDtoToEntity(profileDto, profile);
-        profile.setUser(user); // 确保关联关系正确
+        // 使用 Mapper 更新
+        userProfileMapper.updateFromRequest(request, profile);
 
-        UserProfile savedProfile = userProfileRepository.save(profile);
-        return mapEntityToDto(savedProfile);
+        // 保存 User 会级联保存/更新 Profile
+        userRepository.save(user);
+
+        // 使用 Mapper 转换返回结果
+        return userProfileMapper.toVo(profile);
     }
 
     @Override
@@ -54,40 +67,19 @@ public class UserProfileServiceImpl implements UserProfileService {
         if (!userProfileRepository.existsById(userId)) {
             throw new ResourceNotFoundException("用户资料不存在，无法删除，用户ID: " + userId);
         }
+        // 由于 User 和 UserProfile 的级联关系，直接删除 profile 即可
         userProfileRepository.deleteById(userId);
     }
 
-    private void validateProfileByRole(User user, UserProfileVo dto) {
+    private void validateProfileByRole(User user, UpdateUserProfileRequest request) {
         boolean isStudent = user.getRoles().stream().anyMatch(role -> "STUDENT".equals(role.getName()));
         boolean isTeacher = user.getRoles().stream().anyMatch(role -> "TEACHER".equals(role.getName()));
 
-        if (isStudent && dto.getTitle() != null) {
+        if (isStudent && request.getTitle() != null) {
             throw new BusinessRuleException("学生角色不允许设置职称(title)");
         }
-        if (isTeacher && dto.getStudentId() != null) {
+        if (isTeacher && request.getStudentId() != null) {
             throw new BusinessRuleException("教师角色不允许设置学号(studentId)");
         }
-    }
-
-    // Manual Mappers
-    private UserProfileVo mapEntityToDto(UserProfile entity) {
-        UserProfileVo dto = new UserProfileVo();
-        dto.setUserId(entity.getUserId());
-        dto.setFullName(entity.getFullName());
-        dto.setAvatarUrl(entity.getAvatarUrl());
-        dto.setPhoneNumber(entity.getPhoneNumber());
-        dto.setStudentId(entity.getStudentId());
-        dto.setDepartment(entity.getDepartment());
-        dto.setTitle(entity.getTitle());
-        return dto;
-    }
-
-    private void mapDtoToEntity(UserProfileVo dto, UserProfile entity) {
-        entity.setFullName(dto.getFullName());
-        entity.setAvatarUrl(dto.getAvatarUrl());
-        entity.setPhoneNumber(dto.getPhoneNumber());
-        entity.setStudentId(dto.getStudentId());
-        entity.setDepartment(dto.getDepartment());
-        entity.setTitle(dto.getTitle());
     }
 }

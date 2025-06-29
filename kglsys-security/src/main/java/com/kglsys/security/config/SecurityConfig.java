@@ -19,6 +19,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * Spring Security 的核心配置类。
+ */
 @Configuration
 @EnableWebSecurity // 启用 Spring Security 的 Web 安全功能
 @EnableMethodSecurity(prePostEnabled = true) // 启用方法级别的权限控制（如 @PreAuthorize）
@@ -34,6 +37,11 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * 配置认证提供者 (AuthenticationProvider)。
+     * 这是 Spring Security 认证逻辑的核心部分。
+     * @return DaoAuthenticationProvider 实例
+     */
     @Bean
     public AuthenticationProvider authenticationProvider() {
         // 使用构造函数注入方式创建 DaoAuthenticationProvider
@@ -49,6 +57,11 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
+    /**
+     * 配置安全过滤器链 (SecurityFilterChain)，定义所有 HTTP 请求的安全策略。
+     * @param http HttpSecurity 配置对象
+     * @return 配置好的 SecurityFilterChain
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
