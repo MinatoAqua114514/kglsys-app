@@ -38,7 +38,7 @@ public class LearningPathServiceImpl implements LearningPathService {
         }
 
         Integer styleId = profile.getLearningStyle().getId();
-        return pathRepository.findByLearningStyleId(styleId).stream()
+        return pathRepository.findByForStyle_Id(styleId).stream()
                 .map(this::mapPathToVo)
                 .collect(Collectors.toList());
     }

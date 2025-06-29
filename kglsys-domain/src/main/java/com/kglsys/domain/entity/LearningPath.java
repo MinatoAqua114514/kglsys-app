@@ -34,7 +34,7 @@ public class LearningPath {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "for_style_id")
-    private LearningStyle learningStyle;
+    private LearningStyle forStyle;
 
     /**
      * 路径包含的节点列表。
