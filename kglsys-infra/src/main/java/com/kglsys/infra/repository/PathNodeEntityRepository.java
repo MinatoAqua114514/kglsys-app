@@ -9,7 +9,6 @@ import java.util.List;
 
 @Repository
 public interface PathNodeEntityRepository extends JpaRepository<PathNodeEntity, Long> {
-    List<PathNodeEntity> findByPathNodeId(Long pathNodeId);
     List<PathNodeEntity> findByEntityId(Long entityId);
 
     /**

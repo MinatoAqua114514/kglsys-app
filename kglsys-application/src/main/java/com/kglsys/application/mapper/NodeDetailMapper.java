@@ -3,7 +3,6 @@ package com.kglsys.application.mapper;
 import com.kglsys.domain.entity.*;
 import com.kglsys.domain.enums.LearningStatus;
 import com.kglsys.dto.response.*;
-import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
