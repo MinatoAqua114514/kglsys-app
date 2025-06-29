@@ -3,7 +3,6 @@ package com.kglsys.application.service.impl;
 import com.kglsys.application.service.UserProfileService;
 import com.kglsys.common.exception.BusinessRuleException;
 import com.kglsys.common.exception.ResourceNotFoundException;
-import com.kglsys.domain.entity.Role;
 import com.kglsys.domain.entity.User;
 import com.kglsys.domain.entity.UserProfile;
 import com.kglsys.dto.UserProfileDto;
