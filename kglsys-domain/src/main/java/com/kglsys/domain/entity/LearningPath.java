@@ -2,16 +2,12 @@ package com.kglsys.domain.entity;
 
 import com.kglsys.domain.enums.DifficultyLevel;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-
+import lombok.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 学习路径定义实体
+ * 学习路径定义实体，映射到 `learning_paths` 表。
  */
 @Entity
 @Table(name = "learning_paths")
@@ -24,27 +20,39 @@ public class LearningPath {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "name", nullable = false)
+    @Column(nullable = false)
     private String name;
 
     @Lob
-    @Column(name = "description")
     private String description;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "difficulty_level", nullable = false)
     private DifficultyLevel difficultyLevel;
 
-    // 关联适配的岗位
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "for_style_id")
     private LearningStyle learningStyle;
 
-    // 一个学习路径包含多个有序的节点
+    /**
+     * 路径包含的节点列表。
+     * @OrderBy: 保证从数据库获取时节点总是有序的。
+     */
     @OneToMany(mappedBy = "learningPath", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @OrderBy("sequence ASC") // 保证节点按顺序获取
-    private List<LearningPathNode> nodes;
+    @OrderBy("sequence ASC")
+    @Builder.Default
+    private List<LearningPathNode> nodes = new ArrayList<>();
+
+    // --- 关系管理辅助方法 ---
+    public void addNode(LearningPathNode node) {
+        this.nodes.add(node);
+        node.setLearningPath(this);
+    }
+
+    public void removeNode(LearningPathNode node) {
+        this.nodes.remove(node);
+        node.setLearningPath(null);
+    }
 }

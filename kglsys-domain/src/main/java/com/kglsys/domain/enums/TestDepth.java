@@ -1,4 +1,3 @@
 package com.kglsys.domain.enums;
 
-public enum TestDepth {
-}
+public enum TestDepth { BASIC, INTERMEDIATE, ADVANCED }

@@ -1,4 +1,3 @@
 package com.kglsys.domain.enums;
 
-public enum ValueType {
-}
+public enum ValueType { STRING, NUMBER, BOOLEAN, ARRAY, OBJECT }

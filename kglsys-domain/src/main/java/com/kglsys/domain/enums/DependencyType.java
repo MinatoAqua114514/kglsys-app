@@ -1,4 +1,3 @@
 package com.kglsys.domain.enums;
 
-public enum DependencyType {
-}
+public enum DependencyType { STRICT, RECOMMENDED, OPTIONAL }
