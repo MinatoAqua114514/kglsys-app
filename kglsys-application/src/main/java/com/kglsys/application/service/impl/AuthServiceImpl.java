@@ -92,6 +92,7 @@ public class AuthServiceImpl implements AuthService {
         // 5. 构建并返回 LoginResponse
         return LoginResponse.builder()
                 .accessToken(jwt)
+                .tokenType("Bearer")
                 .userId(userDetails.getId())
                 .username(userDetails.getUsername())
                 .roles(roles)
