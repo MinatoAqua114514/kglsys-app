@@ -2,7 +2,7 @@ package com.kglsys.web.controller;
 
 import com.kglsys.application.service.UserProfileService;
 import com.kglsys.common.responses.ApiResponse;
-import com.kglsys.dto.UserProfileDto;
+import com.kglsys.dto.response.UserProfileVo;
 import com.kglsys.application.util.SecurityUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,36 +20,36 @@ public class UserProfileController {
     // 获取自己的资料
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<ApiResponse<UserProfileDto>> getMyProfile() {
+    public ResponseEntity<ApiResponse<UserProfileVo>> getMyProfile() {
         Long currentUserId = SecurityUtil.getCurrentUserId()
                 .orElseThrow(() -> new IllegalStateException("无法获取当前用户信息"));
-        UserProfileDto profile = userProfileService.getProfileByUserId(currentUserId);
+        UserProfileVo profile = userProfileService.getProfileByUserId(currentUserId);
         return ResponseEntity.ok(ApiResponse.success(profile));
     }
 
     // 更新自己的资料
     @PutMapping("/me")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<ApiResponse<UserProfileDto>> updateMyProfile(@Valid @RequestBody UserProfileDto profileDto) {
+    public ResponseEntity<ApiResponse<UserProfileVo>> updateMyProfile(@Valid @RequestBody UserProfileVo profileDto) {
         Long currentUserId = SecurityUtil.getCurrentUserId()
                 .orElseThrow(() -> new IllegalStateException("无法获取当前用户信息"));
-        UserProfileDto updatedProfile = userProfileService.createOrUpdateProfile(currentUserId, profileDto);
+        UserProfileVo updatedProfile = userProfileService.createOrUpdateProfile(currentUserId, profileDto);
         return ResponseEntity.ok(ApiResponse.success(updatedProfile));
     }
 
     // [ADMIN] 获取任意用户的资料
     @GetMapping("/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<UserProfileDto>> getUserProfile(@PathVariable Long userId) {
-        UserProfileDto profile = userProfileService.getProfileByUserId(userId);
+    public ResponseEntity<ApiResponse<UserProfileVo>> getUserProfile(@PathVariable Long userId) {
+        UserProfileVo profile = userProfileService.getProfileByUserId(userId);
         return ResponseEntity.ok(ApiResponse.success(profile));
     }
 
     // [ADMIN] 更新任意用户的资料
     @PutMapping("/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<UserProfileDto>> updateUserProfile(@PathVariable Long userId, @Valid @RequestBody UserProfileDto profileDto) {
-        UserProfileDto updatedProfile = userProfileService.createOrUpdateProfile(userId, profileDto);
+    public ResponseEntity<ApiResponse<UserProfileVo>> updateUserProfile(@PathVariable Long userId, @Valid @RequestBody UserProfileVo profileDto) {
+        UserProfileVo updatedProfile = userProfileService.createOrUpdateProfile(userId, profileDto);
         return ResponseEntity.ok(ApiResponse.success(updatedProfile));
     }
 

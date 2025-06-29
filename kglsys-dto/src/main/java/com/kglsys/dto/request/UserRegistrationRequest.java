@@ -1,11 +1,11 @@
 package com.kglsys.dto.request;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
+/**
+ * 用户注册请求的数据传输对象。
+ */
 @Data
 public class UserRegistrationRequest {
 

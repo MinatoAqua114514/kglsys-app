@@ -1,14 +1,14 @@
-package com.kglsys.dto;
+package com.kglsys.dto.request;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+/**
+ * 更新用户个人资料的请求DTO。
+ * 只包含可被用户修改的字段。
+ */
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class UserProfileDto {
-
-    private Long userId;
+public class UpdateUserProfileRequest {
 
     @Size(max = 100, message = "姓名长度不能超过100个字符")
     private String fullName;
@@ -19,14 +19,12 @@ public class UserProfileDto {
     @Size(max = 20, message = "电话号码长度不能超过20个字符")
     private String phoneNumber;
 
-    // 学生特有
     @Size(max = 50, message = "学号长度不能超过50个字符")
     private String studentId;
 
     @Size(max = 100, message = "院系/部门长度不能超过100个字符")
     private String department;
 
-    // 教师特有
     @Size(max = 100, message = "职称长度不能超过100个字符")
     private String title;
 }

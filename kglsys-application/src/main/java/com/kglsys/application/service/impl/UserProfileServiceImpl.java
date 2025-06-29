@@ -5,7 +5,7 @@ import com.kglsys.common.exception.BusinessRuleException;
 import com.kglsys.common.exception.ResourceNotFoundException;
 import com.kglsys.domain.entity.User;
 import com.kglsys.domain.entity.UserProfile;
-import com.kglsys.dto.UserProfileDto;
+import com.kglsys.dto.response.UserProfileVo;
 import com.kglsys.infra.repository.UserProfileRepository;
 import com.kglsys.infra.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ public class UserProfileServiceImpl implements UserProfileService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserProfileDto getProfileByUserId(Long userId) {
+    public UserProfileVo getProfileByUserId(Long userId) {
         UserProfile profile = userProfileRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("用户资料未找到，用户ID: " + userId));
         return mapEntityToDto(profile);
@@ -31,7 +31,7 @@ public class UserProfileServiceImpl implements UserProfileService {
 
     @Override
     @Transactional
-    public UserProfileDto createOrUpdateProfile(Long userId, UserProfileDto profileDto) {
+    public UserProfileVo createOrUpdateProfile(Long userId, UserProfileVo profileDto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("用户未找到，用户ID: " + userId));
 
@@ -57,7 +57,7 @@ public class UserProfileServiceImpl implements UserProfileService {
         userProfileRepository.deleteById(userId);
     }
 
-    private void validateProfileByRole(User user, UserProfileDto dto) {
+    private void validateProfileByRole(User user, UserProfileVo dto) {
         boolean isStudent = user.getRoles().stream().anyMatch(role -> "STUDENT".equals(role.getName()));
         boolean isTeacher = user.getRoles().stream().anyMatch(role -> "TEACHER".equals(role.getName()));
 
@@ -70,8 +70,8 @@ public class UserProfileServiceImpl implements UserProfileService {
     }
 
     // Manual Mappers
-    private UserProfileDto mapEntityToDto(UserProfile entity) {
-        UserProfileDto dto = new UserProfileDto();
+    private UserProfileVo mapEntityToDto(UserProfile entity) {
+        UserProfileVo dto = new UserProfileVo();
         dto.setUserId(entity.getUserId());
         dto.setFullName(entity.getFullName());
         dto.setAvatarUrl(entity.getAvatarUrl());
@@ -82,7 +82,7 @@ public class UserProfileServiceImpl implements UserProfileService {
         return dto;
     }
 
-    private void mapDtoToEntity(UserProfileDto dto, UserProfile entity) {
+    private void mapDtoToEntity(UserProfileVo dto, UserProfile entity) {
         entity.setFullName(dto.getFullName());
         entity.setAvatarUrl(dto.getAvatarUrl());
         entity.setPhoneNumber(dto.getPhoneNumber());

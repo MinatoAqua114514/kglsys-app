@@ -4,7 +4,7 @@ import com.kglsys.application.service.AssessmentStudentService;
 import com.kglsys.common.exception.BusinessRuleException;
 import com.kglsys.common.exception.ResourceNotFoundException;
 import com.kglsys.domain.entity.*;
-import com.kglsys.dto.AnswerDto;
+import com.kglsys.dto.payload.AnswerPayload;
 import com.kglsys.dto.request.ConfirmStyleRequest;
 import com.kglsys.dto.request.SubmitAssessmentRequest;
 import com.kglsys.dto.response.AssessmentResultVo;
@@ -113,7 +113,7 @@ public class AssessmentStudentServiceImpl implements AssessmentStudentService {
         // 为保持简洁此处省略，但在生产代码中至关重要。
         List<Integer> optionIds = request.getAnswers()
                 .stream()
-                .map(AnswerDto::getSelectedOptionId)
+                .map(AnswerPayload::getSelectedOptionId)
                 .collect(Collectors.toList());
         return optionRepository.findAllById(optionIds).stream()
                 .collect(Collectors.toMap(opt -> opt.getQuestion().getId(), Function.identity()));
