@@ -2,8 +2,8 @@ spring:
   application:
     name: kglsys-app
   datasource:
-    url: jdbc:mysql://localhost:3306/demo?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: lin
+    url: jdbc:mysql://localhost:3306/devdb2?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
     password: 111111
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.zaxxer.hikari.HikariDataSource
@@ -25,9 +25,15 @@ server:
     include-message: always
     include-stacktrace: never
     include-exception: false
+  port: 8888
 
-# JWT properties
-# this-is-a-super-long-and-secure-secret-key-for-jwt-2025  To BASE64 EnCode
-app:
-  jwtSecret: dGhpcy1pcy1hLXN1cGVyLWxvbmctYW5kLXNlY3VyZS1zZWNyZXQta2V5LWZvci1qd3QtMjAyNQ==
-  jwtExpirationInMs: 86400000
+logging:
+  level:
+    org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer: error
+
+
+# JWT Configuration
+# IMPORTANT: Use a long, random, base64-encoded string for production.
+# You can generate one here: https://www.allkeysgenerator.com/Random/Security-Encryption-Key-Generator.aspx
+kglsys.jwt.secret: your-super-secret-key-that-is-long-and-secure-and-should-be-in-env-vars
+kglsys.jwt.expiration-ms: 86400000 # 24 hours

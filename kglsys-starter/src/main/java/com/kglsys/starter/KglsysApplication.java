@@ -12,7 +12,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @ComponentScan(basePackages = {"com.kglsys"})
 // *** 新增：显式启用JPA仓库，并指定扫描的基础包路径 ***
 // 这个路径应该指向你所有Repository接口所在的包
-@EnableJpaRepositories(basePackages = {"com.kglsys.domain.repository"})
+@EnableJpaRepositories(basePackages = {"com.kglsys.infra.repository"})
 // 可选，但建议添加以明确指定：扫描实体类所在的包
 @EntityScan(basePackages = {"com.kglsys.domain.entity"})
 public class KglsysApplication {

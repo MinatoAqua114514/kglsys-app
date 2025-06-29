@@ -28,18 +28,18 @@
     <modules>
         <!--    公共模块    -->
         <module>kglsys-common</module>
-        <!--    安全模块    -->
-        <module>kglsys-security</module>
         <!--   核心领域模块     -->
         <module>kglsys-domain</module>
         <!--    接口模块    -->
-        <module>kglsys-api</module>
-        <!--    web适配器模块    -->
-        <module>kglsys-web</module>
+        <module>kglsys-dto</module>
         <!--    基础设施模块    -->
         <module>kglsys-infra</module>
         <!--    应用服务模块    -->
         <module>kglsys-application</module>
+        <!--    安全模块    -->
+        <module>kglsys-security</module>
+        <!--    web适配器模块    -->
+        <module>kglsys-web</module>
         <!--    启动模块    -->
         <module>kglsys-starter</module>
     </modules>
