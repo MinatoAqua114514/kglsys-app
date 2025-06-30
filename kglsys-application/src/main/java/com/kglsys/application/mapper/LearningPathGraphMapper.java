@@ -7,15 +7,17 @@ import com.kglsys.domain.enums.LearningStatus;
 import com.kglsys.dto.response.GraphEdgeVo;
 import com.kglsys.dto.response.GraphNodeVo;
 import com.kglsys.dto.response.LearningPathGraphVo;
-import org.mapstruct.*;
+import org.mapstruct.Context;
+import org.mapstruct.DecoratedWith;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.springframework.beans.factory.annotation.Qualifier;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Mapper(componentModel = "spring")
+@DecoratedWith(LearningPathGraphMapperDecorator.class)
+@Qualifier("delegate")
 public interface LearningPathGraphMapper {
 
     /**
@@ -29,34 +31,6 @@ public interface LearningPathGraphMapper {
     @Mapping(target = "nodes", ignore = true) // 节点和边将通过 @AfterMapping 手动构建
     @Mapping(target = "edges", ignore = true)
     LearningPathGraphVo toGraphVo(LearningPath path, @Context Map<Long, LearningStatus> progressMap);
-
-    /**
-     * 在主映射完成后，构建节点和边列表。
-     */
-    @AfterMapping
-    default void afterMapping(@MappingTarget LearningPathGraphVo vo, LearningPath path,
-                              @Context Map<Long, LearningStatus> progressMap) {
-        if (path == null || path.getNodes() == null) {
-            vo.setNodes(Collections.emptyList());
-            vo.setEdges(Collections.emptyList());
-            return;
-        }
-
-        // 1. 构建节点列表 (GraphNodeVo)
-        List<GraphNodeVo> nodes = path.getNodes().stream()
-                .map(node -> toGraphNodeVo(node, progressMap))
-                .collect(Collectors.toList());
-        vo.setNodes(nodes);
-
-        // 2. 构建边列表 (GraphEdgeVo)
-        List<GraphEdgeVo> edges = path.getNodes().stream()
-                .flatMap(node -> node.getPrerequisites() != null ? node
-                        .getPrerequisites()
-                        .stream() : Stream.empty())
-                .map(this::toGraphEdgeVo)
-                .collect(Collectors.toList());
-        vo.setEdges(edges);
-    }
 
     /**
      * 辅助方法：将 LearningPathNode 转换为 GraphNodeVo。
@@ -81,8 +55,8 @@ public interface LearningPathGraphMapper {
             return null;
         }
         return GraphEdgeVo.builder()
-                .source(dependency.getPrerequisiteNode().getId()) // 边的起点是前置节点
-                .target(dependency.getDependentNode().getId())   // 边的终点是依赖节点
+                .source(dependency.getPrerequisiteNode().getId())
+                .target(dependency.getDependentNode().getId())
                 .type(dependency.getDependencyType())
                 .build();
     }
