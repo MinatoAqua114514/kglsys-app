@@ -2,6 +2,7 @@ package com.kglsys.security.config;
 
 import com.kglsys.security.jwt.JwtAuthenticationFilter;
 import com.kglsys.security.service.CustomUserDetailsService;
+import com.kglsys.security.exception.CustomAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +31,8 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter; // 自定义的 JWT 认证过滤器
     private final CustomUserDetailsService userDetailsService; // 自定义用户信息服务类
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -69,6 +72,10 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 // 2. 设置会话管理策略为“无状态”，Spring Security 将不创建/使用 HttpSession
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // 【新增】配置异常处理
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
+                )
                 // 3. 配置请求授权规则
                 .authorizeHttpRequests(auth -> auth
                         // 4. 对以 /api/auth/ 开头的请求路径全部放行（通常是登录、注册等接口）

@@ -20,7 +20,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 // // 扫描 infra 模块中的 JPA Repository 接口。
 @EnableJpaRepositories(basePackages = {"com.kglsys.infra.repository"})
 // 扫描 domain 模块中的 JPA 实体类
-@EntityScan(basePackages = {"com.kglsys.domain.entity"})
+@EntityScan(basePackages = {"com.kglsys.domain"})
 public class KglsysApplication {
 
     public static void main(String[] args) {

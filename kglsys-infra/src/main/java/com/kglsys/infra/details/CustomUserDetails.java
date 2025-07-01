@@ -1,7 +1,7 @@
 package com.kglsys.infra.details;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.kglsys.domain.entity.User;
+import com.kglsys.domain.user.User;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

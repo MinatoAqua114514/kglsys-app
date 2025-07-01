@@ -1,7 +1,7 @@
 package com.kglsys.security.service;
 
-import com.kglsys.domain.entity.User;
-import com.kglsys.infra.repository.UserRepository;
+import com.kglsys.domain.user.User;
+import com.kglsys.infra.repository.user.UserRepository;
 import com.kglsys.infra.details.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
